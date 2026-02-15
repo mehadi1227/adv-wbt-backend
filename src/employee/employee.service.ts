@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateExpenseDto } from './employee.dto';
 import { UpdateExpenseDto } from './employee.dto';
 import { CreateInvoiceDto } from './employee.dto';
+import { stat } from 'fs';
 
 @Injectable()
 export class EmployeeService {
@@ -13,49 +14,47 @@ export class EmployeeService {
     };
   }
 
-  getAllExpenses() {
+  getAllExpenses():object {
     return {
-      message: 'All Expenses Fetched'
+      message: "All Expenses viewed"
     };
   }
 
-  getExpenseById(id: string) {
+  getExpenseById(id: string):object {
+    return {id:id};
+  }
+
+  updateExpense(id: string, dto: UpdateExpenseDto):object {
     return {
-      message: `Expense ID: ${id}`
+      id: id,
+      UpdatedInfo: dto
     };
   }
 
-  updateExpense(id: string, dto: UpdateExpenseDto) {
-    return {
-      message: `Expense ${id} Updated`,
-      data: dto
-    };
-  }
-
-  patchExpense(id: string, dto: UpdateExpenseDto) {
+  patchExpense(id: string, dto: UpdateExpenseDto):object {
     return {
       message: `Expense ${id} Partially Updated`,
       data: dto
     };
   }
 
-  deleteExpense(id: string) {
+  deleteExpense(id: string):object {
     return {
       message: `Expense ${id} Deleted`
     };
   }
 
-  createInvoice(dto: CreateInvoiceDto) {
+  createInvoice(dto: CreateInvoiceDto):object {
     return {
       message: 'Invoice Draft Created',
       data: dto
     };
   }
 
-//   getInvoices(status?: string) {
-//     return {
-//       message: 'Invoices Fetched',
-//       filter: status || 'No Filter'
-//     };
-//   }
+  getInvoices(status?: string):object {
+    return {
+      message: 'Invoices Viewed',status
+      
+    };
+  }
 }

@@ -18,49 +18,49 @@ import { CreateInvoiceDto } from './employee.dto';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
-  @Post('expenses')
+  @Post('create-expenses')
   createExpense(@Body() object: CreateExpenseDto) {
     return this.employeeService.createExpense(object);
   }
 
   @Get('expenses')
-  getAllExpenses() {
+  getAllExpenses():object {
     return this.employeeService.getAllExpenses();
   }
 
-  @Get('expenses/:id')
-  getExpenseById(@Param('id') id: string) {
+  @Get('search-expenses/:id')
+  getExpenseById(@Param('id') id: string):object {
     return this.employeeService.getExpenseById(id);
   }
 
-  @Put('expenses/:id')
+  @Put('expenses-update/:id')
   updateExpense(
     @Param('id') id: string,
     @Body() dto: UpdateExpenseDto,
-  ) {
+  ):object {
     return this.employeeService.updateExpense(id, dto);
   }
 
-  @Patch('expenses/:id')
+  @Patch('expenses-partial/:id')
   patchExpense(
     @Param('id') id: string,
     @Body() dto: UpdateExpenseDto,
-  ) {
+  ):object {
     return this.employeeService.patchExpense(id, dto);
   }
 
-  @Delete('expenses/:id')
-  deleteExpense(@Param('id') id: string) {
+  @Delete('delete-expenses/:id')
+  deleteExpense(@Param('id') id: string):object {
     return this.employeeService.deleteExpense(id);
   }
 
-  @Post('invoices')
-  createInvoice(@Body() dto: CreateInvoiceDto) {
+  @Post('create-invoices')
+  createInvoice(@Body() dto: CreateInvoiceDto):object {
     return this.employeeService.createInvoice(dto);
   }
 
-//   @Get('invoices')
-//   getInvoices(@Query('status') status: string) {
-//     return this.employeeService.getInvoices(status);
-//   }
+  @Get('invoices')
+  getInvoices(@Query('status') status: string):object {
+    return this.employeeService.getInvoices(status);
+  }
 }
