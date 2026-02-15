@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { EmployeeModule } from './employee/employee.module';
 
 @Module({
-  imports: [EmployeeModule],
+  imports: [],
   controllers: [AppController],
   providers: [AppService],
 })
