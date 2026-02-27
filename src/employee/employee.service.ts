@@ -1,11 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { CreateExpenseDto } from './employee.dto';
+import { CreateExpenseDto, RegisterationDto } from './employee.dto';
 import { UpdateExpenseDto } from './employee.dto';
 import { CreateInvoiceDto } from './employee.dto';
-import { stat } from 'fs';
+
 
 @Injectable()
 export class EmployeeService {
+
+
+  registerEmployee(data: RegisterationDto): object {
+    return {
+      message: "Employee Registered Successfully",
+      employee: data
+    };
+
+  }
+
+
+
 
   createExpense(myobject: CreateExpenseDto) {
     return {
@@ -50,11 +62,16 @@ export class EmployeeService {
       data: dto
     };
   }
-
-  getInvoices(status?: string):object {
-    return {
-      message: 'Invoices Viewed',status
-      
-    };
+    getInvoiceByNameAndID(name: string, id: number): object {
+    return { name: name, id: id };
   }
+
+  // getInvoices(status?: string):object {
+  //   return {
+  //     message: 'Invoices Viewed',status
+      
+  //   };
+  // }
+
+
 }

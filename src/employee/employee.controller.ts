@@ -8,15 +8,23 @@ import {
   Body,
   Param,
   Query,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
-import { CreateExpenseDto } from './employee.dto';
+import { CreateExpenseDto, RegisterationDto } from './employee.dto';
 import { UpdateExpenseDto } from './employee.dto';
 import { CreateInvoiceDto } from './employee.dto';
 
 @Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
+  
+  @Post('registration')
+  @UsePipes(new ValidationPipe())
+  registerEmployee(@Body() data: RegisterationDto): object {
+    return this.employeeService.registerEmployee(data);
+  }
 
   @Post('create-expenses')
   createExpense(@Body() object: CreateExpenseDto) {
@@ -58,9 +66,17 @@ export class EmployeeController {
   createInvoice(@Body() dto: CreateInvoiceDto):object {
     return this.employeeService.createInvoice(dto);
   }
-
-  @Get('invoices')
-  getInvoices(@Query('status') status: string):object {
-    return this.employeeService.getInvoices(status);
+  
+    @Get('search')
+  getInvoiceByNameAndID(
+    @Query('name') name: string,
+    @Query('id') id: number
+  ): object {
+    return this.employeeService.getInvoiceByNameAndID(name, id);
   }
+
+  // @Get('invoices')
+  // getInvoices(@Query('status') status: string): {
+  //   return this.employeeService.getInvoices(status);
+  // }
 }
