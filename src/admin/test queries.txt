@@ -1,0 +1,6 @@
+create user:
+"fullName":"Fihab Ifty",
+  "age": 35,
+  "email": "ifty@company.com",
+  "status": "active",
+  "role": "supplier"
