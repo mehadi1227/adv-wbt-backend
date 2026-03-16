@@ -48,4 +48,6 @@ export class UserDTO{
     @IsNotEmpty({message: "Role cannot be empty"})
     @Matches(/^(manager|employee|accountant|supplier)$/)
     role: role
+    name: string
+    password: string
 }
