@@ -1,11 +1,12 @@
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { AdminService } from "./admin.service";
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { diskStorage } from "multer";
 import { UserEntity } from "src/user.entity";
 import type { Role, Status } from "src/user.entity";
 import { UserDTO } from "src/user.dto";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller('admin')
 export class AdminController {
@@ -36,6 +37,7 @@ export class AdminController {
         return this.adminService.CreateUser(newUser, file)
     }
 
+    @UseGuards(AuthGuard)
     @Get("/get_all_users")
     GetAllUsers(): Promise<UserEntity[]| null> {
         return this.adminService.GetAllUsers();
