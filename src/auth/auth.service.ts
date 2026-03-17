@@ -1,10 +1,11 @@
-import { Injectable, Res } from "@nestjs/common";
+import { Injectable, Res, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "../user.entity";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import express from "express";
+import { UserDTO } from "src/user.dto";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         private jwtService: JwtService) { }
 
-    async Login(email: UserEntity["email"], password: UserEntity["password"], @Res({ passthrough: true }) res: express.Response): Promise<object> {
+    async Login(email: UserEntity["email"], password: UserEntity["password"], @Res({ passthrough: true }) res: express.Response): Promise<{message: string}> {
 
         const user = await this.userRepository.findOne({ where: { email } });
 
@@ -27,9 +28,9 @@ export class AuthService {
                 return { message: "Login successful" };
             }
 
-            return { message: "Invalid password" };
+            throw new UnauthorizedException("Invalid  password");
         }
 
-        return { message: "Invalid email or password" };
+        throw new UnauthorizedException("Invalid email or password");
     }
 }

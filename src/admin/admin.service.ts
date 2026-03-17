@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { UserDTO } from "src/user.dto";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { CreateUserDTO, UserDTO } from "src/user.dto";
 import { UserEntity } from "src/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MoreThanOrEqual, Repository } from "typeorm";
@@ -11,22 +11,13 @@ import { TransactionEntity } from "src/transaction.entity";
 
 @Injectable()
 export class AdminService {
-    // UpdateUserStatus(id: number, status: string): Promise<UserEntity | null> {
-    //     throw new Error("Method not implemented.");
-    // }
-    // GetInactiveUsers(): Promise<UserEntity[] | null> {
-    //     throw new Error("Method not implemented.");
-    // }
-    // GetOlderUsers(): Promise<UserEntity[] | null> {
-    //     throw new Error("Method not implemented.");
-    // }
 
     constructor(@InjectRepository(UserEntity) private adminRepository: Repository<UserEntity>,
         @InjectRepository(TransactionEntity) private transactionRepository: Repository<TransactionEntity>
     ) { }
 
 
-    async CreateUser(userInfo: UserDTO, files: Express.Multer.File): Promise<UserEntity> {
+    async CreateUser(userInfo: CreateUserDTO, files: Express.Multer.File): Promise<UserEntity> {
 
         const user = this.adminRepository.create({
             name: userInfo.name,
@@ -83,7 +74,7 @@ export class AdminService {
     async DeleteUser(id: string): Promise<{ message: string }> {
         const user = await this.adminRepository.findOneBy({ id: id });
         if (!user) {
-            return { message: "User not found" };
+            return new BadRequestException("User not found");
         }
         await this.adminRepository.delete(id);
         return { message: "User deleted successfully" };

@@ -5,8 +5,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Uploaded
 import { diskStorage } from "multer";
 import { UserEntity } from "src/user.entity";
 import type { Role, Status } from "src/user.entity";
-import { UserDTO } from "src/user.dto";
+import { CreateUserDTO, UserDTO } from "src/user.dto";
 import { AuthGuard } from "src/auth/auth.guard";
+import { AdminGuard } from "./admin.guard";
 
 @Controller('admin')
 export class AdminController {
@@ -14,6 +15,7 @@ export class AdminController {
     constructor(private readonly adminService: AdminService) { }
 
 
+    @UseGuards(AdminGuard)
     @UsePipes(new ValidationPipe())
     @Post('create_user')
     @UseInterceptors(FileInterceptor('User-CV', {
@@ -33,36 +35,41 @@ export class AdminController {
             }
         })
     }))
-    createEmplye(@Body() newUser: UserDTO, @UploadedFile() file: Express.Multer.File): Promise<UserEntity> {
+    createEmplye(@Body() newUser: CreateUserDTO, @UploadedFile() file: Express.Multer.File): Promise<UserEntity> {
         return this.adminService.CreateUser(newUser, file)
     }
 
-    @UseGuards(AuthGuard)
+    @UseGuards(AdminGuard)
     @Get("/get_all_users")
     GetAllUsers(): Promise<UserEntity[]| null> {
         return this.adminService.GetAllUsers();
     }
 
+    @UseGuards(AdminGuard)
     @Get("/get_user_by_email/:email")
     GetUserById(@Param('email') email: UserDTO["email"]): Promise<UserEntity | null> {
         return this.adminService.GetUserById(email);
     }
 
+    @UseGuards(AdminGuard)
     @Get("/get_users_by_role_status")
     GetUsersByRoleStatus(@Query('role') role: Role, @Query('status') status: Status): Promise<UserEntity[] | null> {
         return this.adminService.GetUsersByRoleStatus(role, status);
     }
 
+    @UseGuards(AdminGuard)
     @Patch("/update_user_status")
     UpdateUserStatus(@Body('id') id: string, @Body('status') status: Status): Promise<UserEntity | null> {
         return this.adminService.UpdateUserStatus(id, status)
     }
 
+    @UseGuards(AdminGuard)
     @Put("/update_admin_profile")
     UpdateAdminProfile(@Body() updatedInfo: UserDTO): Promise<UserEntity | null> {
         return this.adminService.UpdateAdminProfile(updatedInfo)
     }
 
+    @UseGuards(AdminGuard)
     @Delete("/delete_user/:id")
     DeleteUser(@Param('id') id: string): Promise<{ message: string }> {
         return this.adminService.DeleteUser(id)

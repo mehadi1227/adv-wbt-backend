@@ -23,11 +23,11 @@ export class TransactionEntity {
   @Generated('uuid')
   transaction_no: string;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, { nullable: false , cascade: false})
   @JoinColumn({ name: 'transaction_to' })
   transaction_to: UserEntity;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, { nullable: false , cascade: false})
   @JoinColumn({ name: 'issued_by' })
   issued_by: UserEntity;
 
