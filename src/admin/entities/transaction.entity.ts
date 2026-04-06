@@ -8,7 +8,8 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
+
+import { ProfileEntity } from './profile.entity';
 
 export type TransactionType = 'payment' | 'refund' | 'credit' | 'debit' | 'transfer';
 
@@ -23,13 +24,13 @@ export class TransactionEntity {
   @Generated('uuid')
   transaction_no: string;
 
-  @ManyToOne(() => UserEntity, { nullable: false , cascade: false})
-  @JoinColumn({ name: 'transaction_to' })
-  transaction_to: UserEntity;
+  @ManyToOne(() => ProfileEntity, transaction_to => transaction_to.recieve_transactions, { nullable: false , cascade: false})
+ @JoinColumn()
+  transaction_to: ProfileEntity;
 
-  @ManyToOne(() => UserEntity, { nullable: false , cascade: false})
-  @JoinColumn({ name: 'issued_by' })
-  issued_by: UserEntity;
+  @ManyToOne(() => ProfileEntity, issued_by => issued_by.issued_transactions, { nullable: false , cascade: false})
+ @JoinColumn()
+  issued_by: ProfileEntity;
 
   @Column({ nullable: true })
   order_id: string;

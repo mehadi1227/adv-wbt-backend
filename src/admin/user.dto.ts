@@ -1,5 +1,5 @@
 import { IsEmail, IsEmpty, IsIn, IsNotEmpty, IsString, IsUUID, Matches } from "class-validator";
-import type { Role, Status } from "./user.entity";
+import type { Role, Status } from "./entities/user.entity";
 
 
 export class UserDTO {
@@ -31,10 +31,14 @@ export class UserDTO {
 }
 
 export class UpdateUserDTO{
-    @IsNotEmpty({message: "Name is required"})
-    @IsString({message: "Name must be a string"})
-    @Matches(/^[a-zA-Z\s]+$/, {message: "Name can not contain any numbers or special characters"})
-    name: string
+    
+    @IsNotEmpty({message: "Id is required"})
+    id: string
+
+    @IsNotEmpty({message: "Full name is required"})
+    @IsString({message: "Full name must be a string"})
+    @Matches(/^[a-zA-Z\s]+$/, {message: "Full name can not contain any numbers or special characters"})
+    full_name: string
 
     @IsNotEmpty({message: "Email is required"})
     @IsEmail({}, {message: "Email must be a valid email address"})
@@ -44,16 +48,18 @@ export class UpdateUserDTO{
     @Matches(/^.{6,}$/, {message: "Password must be at least 6 characters"})
     password: string
 
-    @IsNotEmpty({message: "Role is required"})
-    @IsIn(["admin", "employee", "manager", "accountant", "supplier"], {message: "Invalid Role type"})
-    role: Role
+    @IsNotEmpty({message: "Address is required"})
+    address: string
+
+    @IsNotEmpty({message: "Designation is required"})
+    designation: string
 }
 
 export class CreateUserDTO{
-    @IsNotEmpty({message: "Name is required"})
-    @IsString({message: "Name must be a string"})
-    @Matches(/^[a-zA-Z\s]+$/, {message: "Name can not contain any numbers or special characters"})
-    name: string
+    @IsNotEmpty({message: "Full name is required"})
+    @IsString({message: "Full name must be a string"})
+    @Matches(/^[a-zA-Z\s]+$/, {message: "Full name can not contain any numbers or special characters"})
+    full_name: string
 
     @IsNotEmpty({message: "Email is required"})
     @IsEmail({}, {message: "Email must be a valid email address"})
