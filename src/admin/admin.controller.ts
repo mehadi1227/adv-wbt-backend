@@ -1,11 +1,11 @@
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { AdminService } from "./admin.service";
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { diskStorage } from "multer";
-import { UserEntity } from "src/user.entity";
-import type { Role, Status } from "src/user.entity";
-import { CreateUserDTO, UserDTO } from "src/user.dto";
+import { UserEntity } from "src/admin/entities/user.entity";
+import type { Role, Status } from "src/admin/entities/user.entity";
+import { CreateUserDTO, UpdateUserDTO, UserDTO } from "src/admin/user.dto";
 import { AuthGuard } from "src/auth/auth.guard";
 import { AdminGuard } from "./admin.guard";
 
@@ -41,14 +41,14 @@ export class AdminController {
 
     @UseGuards(AdminGuard)
     @Get("/get_all_users")
-    GetAllUsers(): Promise<UserEntity[]| null> {
+    GetAllUsers(): Promise<UserEntity[]| { message: string }> {
         return this.adminService.GetAllUsers();
     }
 
     @UseGuards(AdminGuard)
     @Get("/get_user_by_email/:email")
-    GetUserById(@Param('email') email: UserDTO["email"]): Promise<UserEntity | null> {
-        return this.adminService.GetUserById(email);
+    GetUserByEmail(@Param('email') email: string): Promise<UserEntity[] | {message:string}> {
+        return this.adminService.GetUserByEmail(email);
     }
 
     @UseGuards(AdminGuard)
@@ -65,7 +65,7 @@ export class AdminController {
 
     @UseGuards(AdminGuard)
     @Put("/update_admin_profile")
-    UpdateAdminProfile(@Body() updatedInfo: UserDTO): Promise<UserEntity | null> {
+    UpdateAdminProfile(@Body() updatedInfo: UpdateUserDTO): Promise<Partial<UserEntity>> {
         return this.adminService.UpdateAdminProfile(updatedInfo)
     }
 
