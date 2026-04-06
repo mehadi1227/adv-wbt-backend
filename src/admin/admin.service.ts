@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Like, MoreThanOrEqual, Repository } from "typeorm";
 import type { Role, Status } from "src/admin/entities/user.entity";
 import * as bycrypt from "bcrypt"
-import { TransactionEntity } from "src/transaction.entity";
+import { TransactionEntity } from "./entities/transaction.entity";
 import { ActivityEntity } from "./entities/activity.enitity";
 import { ProfileEntity } from "./entities/profile.entity";
 
