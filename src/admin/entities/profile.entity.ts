@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { TransactionEntity } from "./transaction.entity";
 import { ActivityEntity } from "src/admin/entities/activity.enitity";
@@ -9,7 +9,7 @@ export class ProfileEntity
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @OneToOne(() => UserEntity, user => user.profile, { nullable: false, cascade: true })
+    @OneToOne(() => UserEntity, user => user.profile, { nullable: false })
     user: UserEntity
 
     @Column('varchar', { length: 255, nullable: false })
@@ -24,11 +24,13 @@ export class ProfileEntity
     @Column("varchar", {length: 255, nullable: false})
     cv_path: string
 
-    @ManyToOne(() => TransactionEntity, transations => transations.issued_by || transations.transaction_to, { nullable: true, cascade: false })
-    @JoinColumn()
-    transactions: TransactionEntity[]
+    @OneToMany(() => TransactionEntity, recieve_transactions => recieve_transactions.transaction_to, {nullable: true, cascade: false})
+    recieve_transactions: TransactionEntity[]
 
-    @ManyToOne(() => ActivityEntity, activities => activities.conducted_by, { nullable: true, cascade: false })
+    @OneToMany(() => TransactionEntity, issued_transactions => issued_transactions.issued_by, {nullable: true, cascade: false})
+    issued_transactions: TransactionEntity[]
+
+    @OneToMany(() => ActivityEntity, activities => activities.conducted_by, { nullable: true, cascade: false })
     @JoinColumn()
     activities: ActivityEntity[]
 

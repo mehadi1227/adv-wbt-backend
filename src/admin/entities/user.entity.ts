@@ -23,7 +23,7 @@ export class UserEntity{
     @Column({default: "active",nullable: false})
     status: Status
 
-    @OneToOne(() => ProfileEntity, profile => profile.user, { cascade: true })
+    @OneToOne(() => ProfileEntity, profile => profile.user, {cascade:true})
     @JoinColumn()
     profile: ProfileEntity
     
