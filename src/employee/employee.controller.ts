@@ -30,12 +30,13 @@ export class EmployeeController {
 
  constructor(private readonly employeeService: EmployeeService) {}
   
- // ===== TASK =====
+ // task
+ @UseGuards(AuthGuard)
   @Get('tasks')
   getAllTasks() {
     return this.employeeService.getAllTasks();
   }
-
+   @UseGuards(AuthGuard)
   @Get('tasks/:id')
   getTask(@Param('id', ParseIntPipe) id: number) {
     return this.employeeService.getTask(id);
@@ -46,44 +47,45 @@ export class EmployeeController {
     return this.employeeService.updateTask(id, body);
   }
 
-  // ===== ORDER =====
+  // order
+  @UseGuards(AuthGuard)
   @Post('orders')
   createOrder(@Body() body: any) {
     return this.employeeService.createOrder(body);
   }
-
+  @UseGuards(AuthGuard)
   @Get('orders')
   getAllOrders() {
     return this.employeeService.getAllOrders();
   }
-
+  @UseGuards(AuthGuard)
   @Put('orders/:id')
   updateOrder(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     return this.employeeService.updateOrder(id, body);
   }
-
+    @UseGuards(AuthGuard)
   @Delete('orders/:id')
   deleteOrder(@Param('id', ParseIntPipe) id: number) {
     return this.employeeService.deleteOrder(id);
   }
 
-  // ===== RELATION =====
-
+  // relation
+@UseGuards(AuthGuard)
   @Get('tasks/employee/:id')
   getTasksByEmployee(@Param('id', ParseIntPipe) id: number) {
     return this.employeeService.getTasksByEmployee(id);
   }
-
+@UseGuards(AuthGuard)
   @Get('orders/task/:taskId')
   getOrdersByTask(@Param('taskId', ParseIntPipe) taskId: number) {
     return this.employeeService.getOrdersByTask(taskId);
   }
-
+@UseGuards(AuthGuard)
   @Post('payment')
 createPayment(@Body() body: any) {
   return this.employeeService.createPayment(body);
 }
-
+@UseGuards(AuthGuard)
   @Get('payment/order/:orderId')
   getPaymentByOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return this.employeeService.getPaymentByOrder(orderId);

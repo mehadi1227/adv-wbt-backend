@@ -252,7 +252,7 @@ async createPayment(dto: any) {
 
 //   const savedOrder = await this.orderRepo.save(order);
 
-//   // ✅ MAIL SEND HERE
+//   //  MAIL SEND HERE
 //   await this.mailer.sendMail({
 //     to: emp.email,
 //     subject: "Order Placed",
