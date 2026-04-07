@@ -1,7 +1,7 @@
 import { FileInterceptor } from "@nestjs/platform-express";
 
 import { AdminService } from "./admin.service";
-import {  Body, Controller, Delete, Get,  Param, Patch, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
+import {  Body, Controller, Delete, Get,  Param, Patch, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { diskStorage } from "multer";
 import { UserEntity } from "src/admin/entities/user.entity";
 import type { Role, Status } from "src/admin/entities/user.entity";
@@ -9,6 +9,7 @@ import { CreateUserDTO, UpdateUserDTO, UserDTO } from "src/admin/user.dto";
 import { AdminGuard } from "./admin.guard";
 import { ActivityEntity } from "./entities/activity.enitity";
 import { TransactionEntity, type TransactionStatus } from "./entities/transaction.entity";
+import type { Request } from "express";
 
 @Controller('admin')
 export class AdminController {
@@ -36,8 +37,16 @@ export class AdminController {
             }
         })
     }))
-    createEmplye(@Body() newUser: CreateUserDTO, @UploadedFile() file: Express.Multer.File, @Body('adminID') adminID: string): Promise<ActivityEntity> {
+    createEmplye(@Body() newUser: CreateUserDTO, @UploadedFile() file: Express.Multer.File, @Req() request: Request): Promise<ActivityEntity> {
+        const adminID = request['user'].sub.profileId;
         return this.adminService.CreateUser(newUser, file, adminID)
+    }
+
+    @UseGuards(AdminGuard)
+    @Get('get_admin_profile')
+    GetAdminProfile(@Req() request: Request): Promise<Partial<UserEntity>>
+    {
+        return this.adminService.GetAdminProfile(request['user'].sub.userId)
     }
 
     @UseGuards(AdminGuard)
@@ -60,19 +69,22 @@ export class AdminController {
 
     @UseGuards(AdminGuard)
     @Patch("/update_user_status")
-    UpdateUserStatus(@Body('id') id: string, @Body('status') status: Status, @Body('adminID') adminID: string): Promise<ActivityEntity> {
+    UpdateUserStatus(@Body('id') id: string, @Body('status') status: Status, @Req() request: Request): Promise<ActivityEntity> {
+        const adminID = request['user'].sub.profileId;
         return this.adminService.UpdateUserStatus(id, status, adminID);
     }
 
     @UseGuards(AdminGuard)
     @Put("/update_admin_profile")
-    UpdateAdminProfile(@Body() updatedInfo: UpdateUserDTO): Promise<Partial<UserEntity>> {
-        return this.adminService.UpdateAdminProfile(updatedInfo)
+    UpdateAdminProfile(@Body() updatedInfo: UpdateUserDTO, @Req() request: Request): Promise<Partial<UserEntity>> {
+        const adminID = request['user'].sub.userId;
+        return this.adminService.UpdateAdminProfile(updatedInfo, adminID);
     }
 
     @UseGuards(AdminGuard)
     @Delete("/delete_user/:id")
-    DeleteUser(@Param('id') id: string, @Body('adminID') adminID: string): Promise<ActivityEntity> {
+    DeleteUser(@Param('id') id: string, @Req() request: Request): Promise<ActivityEntity> {
+        const adminID = request['user'].sub.profileId;
         return this.adminService.DeleteUser(id, adminID)
     }
 
@@ -91,7 +103,8 @@ export class AdminController {
 
     @UseGuards(AdminGuard)
     @Patch("/update_transaction_status")
-    UpdateTransactionStatus(@Body('id') id: string, @Body('status') status: TransactionStatus, @Body('adminID') adminID: string): Promise<ActivityEntity> {
+    UpdateTransactionStatus(@Body('id') id: string, @Body('status') status: TransactionStatus, @Req() request: Request): Promise<ActivityEntity> {
+        const adminID = request['user'].sub.profileId;
         return this.adminService.UpdateTransactionStatus(id, status, adminID);
     }
 
