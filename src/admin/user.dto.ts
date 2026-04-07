@@ -32,8 +32,8 @@ export class UserDTO {
 
 export class UpdateUserDTO{
     
-    @IsNotEmpty({message: "Id is required"})
-    id: string
+    // @IsNotEmpty({message: "Id is required"})
+    // id: string
 
     @IsNotEmpty({message: "Full name is required"})
     @IsString({message: "Full name must be a string"})

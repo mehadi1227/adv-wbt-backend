@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDTO, UpdateUserDTO, UserDTO } from "src/admin/user.dto";
 import { UserEntity } from "src/admin/entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -43,7 +43,7 @@ export class AdminService {
 
         await this.adminRepository.save(user)
 
-        const adminProfile = await this.profileRepository.findOne({ where: { user: { id: adminID } } });
+        const adminProfile = await this.profileRepository.findOne({ where: {  id: adminID  } });
         if (!adminProfile) {
             throw new NotFoundException("Admin profile not found");
         }
@@ -56,6 +56,17 @@ export class AdminService {
         await this.activityRepository.save(newActivity)
 
         return newActivity
+    }
+
+    async GetAdminProfile(adminID: string): Promise<Partial<UserEntity>>
+    {
+        const admin = await this.adminRepository.findOne({where:{id: adminID}, select:{id: true,email:true, role:true, status:true, profile:true},
+        relations: {profile: true}})
+        if(!admin)
+        {
+            throw new UnauthorizedException("This is not valid admin")
+        }
+        return admin
     }
 
     async GetAllUsers(): Promise<UserEntity[] | { message: string }> {
@@ -90,12 +101,14 @@ export class AdminService {
     async UpdateUserStatus(id: string, status: Status, adminID: string): Promise<ActivityEntity> {
 
         await this.adminRepository.update(id, { status: status })
-        const user = await this.adminRepository.findOne({ where: { id: id }, select: { id: true, email: true, status: true, profile: { full_name: true } } });
+        const user = await this.adminRepository.findOne({ where: { id: id }, 
+            select: { id: true, email: true, status: true, profile: { full_name: true } },
+        relations: {profile: true} });
         if (!user) {
             throw new NotFoundException("User not found");
         }
 
-        const adminProfile = await this.profileRepository.findOne({ where: { user: { id: adminID } } });
+        const adminProfile = await this.profileRepository.findOne({ where: {  id: adminID  } });
         if (!adminProfile) {
             throw new NotFoundException("Admin profile not found");
         }
@@ -111,12 +124,12 @@ export class AdminService {
         // return user;
     }
 
-    async UpdateAdminProfile(updatedInfo: UpdateUserDTO): Promise<Partial<UserEntity>> {
+    async UpdateAdminProfile(updatedInfo: UpdateUserDTO, adminID: string): Promise<Partial<UserEntity>> {
 
         const salt = await bycrypt.genSalt();
         const hashedPassword = await bycrypt.hash(updatedInfo.password, salt);
 
-        const user = await this.adminRepository.findOne({ where: { id: updatedInfo.id }, relations: { profile: true } });
+        const user = await this.adminRepository.findOne({ where: { id: adminID }, relations: { profile: true } });
         if (!user) {
             throw new NotFoundException("User not found");
         }
@@ -157,7 +170,7 @@ export class AdminService {
         await this.adminRepository.delete(id);
         
 
-        const adminProfile = await this.profileRepository.findOne({ where: { user: { id: adminID } } });
+        const adminProfile = await this.profileRepository.findOne({ where: {  id: adminID  } });
         if (!adminProfile) {
             throw new NotFoundException("Admin profile not found");
         }
@@ -174,7 +187,11 @@ export class AdminService {
     }
 
     async GetAllActivities(): Promise<ActivityEntity[]> {
-        return await this.activityRepository.find({ relations: { conducted_by: { user: true } } });
+        return await this.activityRepository.find({ select:{conducted_by:{id: true, full_name: true, cv_path: true,
+            address: true, 
+            designation: true, 
+            user: { email: true, role: true, status: true } } },
+            relations: { conducted_by: { user: true } } });
     }
 
     async GetAllTransactions(): Promise<TransactionEntity[]> {
@@ -199,7 +216,7 @@ export class AdminService {
         transaction.status = status;
         await this.transactionRepository.save(transaction);
 
-        const adminProfile = await this.profileRepository.findOne({ where: { user: { id: adminID } } });
+        const adminProfile = await this.profileRepository.findOne({ where: {  id: adminID  } });
         if (!adminProfile) {
             throw new NotFoundException("Admin profile not found");
         }
