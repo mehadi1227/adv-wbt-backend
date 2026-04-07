@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth.constant';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AdminAuthController } from './auth.controller';
+import { AdminAuthService } from './auth.service';
 import { UserEntity } from '../entities/user.entity';
 import { AuthGuard } from './auth.guard';
 
@@ -13,8 +13,8 @@ import { AuthGuard } from './auth.guard';
     secret: jwtConstants.secret,
     signOptions: { expiresIn: '1h' },
   })],
-  controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
+  controllers: [AdminAuthController],
+  providers: [AdminAuthService, AuthGuard],
   exports: [ JwtModule],
 })
-export class AuthModule {}
+export class AdminAuthModule {}

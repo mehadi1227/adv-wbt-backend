@@ -7,7 +7,7 @@ import { JwtService } from "@nestjs/jwt";
 import express from "express";
 
 @Injectable()
-export class AuthService {
+export class AdminAuthService {
 
     constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         private jwtService: JwtService) { }

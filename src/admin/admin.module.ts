@@ -4,14 +4,14 @@ import { AdminService } from "./admin.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/admin/entities/user.entity";
 import { TransactionEntity } from "./entities/transaction.entity";
-import { AuthModule } from "src/admin/auth/auth.module";
+import { AdminAuthModule } from "src/admin/auth/auth.module";
 import { AdminGuard } from "./admin.guard";
 import { ActivityEntity } from "./entities/activity.enitity";
 import { ProfileEntity } from "./entities/profile.entity";
 // import { UserEntity } from "./admin.entity";
 
 @Module({
-    imports: [AuthModule,TypeOrmModule.forFeature([UserEntity, TransactionEntity, ActivityEntity,ProfileEntity]), AuthModule],
+    imports: [AdminAuthModule,TypeOrmModule.forFeature([UserEntity, TransactionEntity, ActivityEntity,ProfileEntity])],
     controllers: [AdminController],
     providers: [AdminService, AdminGuard]
 })
