@@ -11,7 +11,7 @@ import { ProfileEntity } from "./entities/profile.entity";
 // import { UserEntity } from "./admin.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserEntity, TransactionEntity, ActivityEntity,ProfileEntity]), AuthModule],
+    imports: [AuthModule,TypeOrmModule.forFeature([UserEntity, TransactionEntity, ActivityEntity,ProfileEntity]), AuthModule],
     controllers: [AdminController],
     providers: [AdminService, AdminGuard]
 })
