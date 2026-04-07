@@ -4,7 +4,7 @@ import { AdminService } from "./admin.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "src/admin/entities/user.entity";
 import { TransactionEntity } from "./entities/transaction.entity";
-import { AuthModule } from "src/auth/auth.module";
+import { AuthModule } from "src/admin/auth/auth.module";
 import { AdminGuard } from "./admin.guard";
 import { ActivityEntity } from "./entities/activity.enitity";
 import { ProfileEntity } from "./entities/profile.entity";

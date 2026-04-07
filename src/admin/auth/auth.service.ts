@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Res } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { UserEntity } from "../admin/entities/user.entity";
+import { UserEntity } from "../entities/user.entity";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import express from "express";
