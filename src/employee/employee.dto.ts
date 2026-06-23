@@ -37,6 +37,9 @@ export class CreateUserDto {
   password !: string;
 
   @IsString()
+phone !: string;
+
+  @IsString()
   @IsIn(['manager', 'employee', 'supplier'])
   role!: string;
 }

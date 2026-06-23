@@ -13,7 +13,7 @@ import { EmployeeModule } from 'src/employee/employee.module';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '7D' },
     }),
   ],
   providers: [AuthService],

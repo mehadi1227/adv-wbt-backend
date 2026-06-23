@@ -14,7 +14,8 @@ import { User } from './entity/user.entity';
 import { Order } from './entity/order.entity';
 //import { Employee } from './employee.entity';
 import { Task} from './entity/task.entity';
-import { CreateUserDto } from './employee.dto';
+import { CreateOrderDto, CreateUserDto, UpdateTaskDto } from './employee.dto';
+
 @Injectable()
 export class EmployeeService {
 
@@ -29,23 +30,45 @@ constructor(
   ) {}
 
   // TASK
-  async getAllTasks() {
-    return this.taskRepo.find({ relations: ['assignedTo', 'createdBy'] });
-  }
+  // async getAllTasks(sub: any) {
+  //   return this.taskRepo.find({ relations: ['assignedTo', 'createdBy'] });
+  // }
+async getAllTasks(userId: number) {
 
+  return this.taskRepo.find({
+
+    where: {
+
+      assignedTo: {
+
+        id: userId,
+
+      },
+
+    },
+
+    relations: ['assignedTo', 'createdBy'],
+
+  });
+
+}
   async getTask(id: number) {
     const task = await this.taskRepo.findOne({ where: { id } });
     if (!task) throw new NotFoundException('Task not found');
     return task;
   }
 
-  async updateTask(id: number, data: any) {
+  async updateTask(id: number, data: UpdateTaskDto) {
     await this.taskRepo.update(id, data);
-    return this.getTask(id);
+    return this.taskRepo.findOne({
+      select: ['id', 'status'],
+      where: { id },
+      //relations: ['assignedTo', 'createdBy'],
+    });
   }
 
   // ORDER
-async createOrder(dto: any) {
+async createOrder(dto: CreateOrderDto) {
   // find task
   const task = await this.taskRepo.findOne({
     where: { id: dto.taskId },
@@ -71,36 +94,140 @@ async createOrder(dto: any) {
     totalAmount: dto.quantity * dto.price,
 
     task: task,
-    employee: { id: dto.employeeId }, // 🔥 relation mapping
+    employee: { id: dto.employeeId }, // relation mapping
     supplier: { id: dto.supplierId },
   });
 
   const saved = await this.orderRepo.save(order);
 
   //  send mail (from DB email)
-  await this.mailer.sendMail({
-    to: supplier.email,
-    subject: 'New Order',
-    text: `New order: ${dto.productName}, Quantity: ${dto.quantity}`,
-  });
+  // await this.mailer.sendMail({
+  //   to: supplier.email,
+  //   subject: 'New Order',
+  //   text: `New order: ${dto.productName}, Quantity: ${dto.quantity}`,
+  // });
 
   return saved;
 }
 
+  // async getAllOrders() {
+  //   return this.orderRepo.find({ relations: ['task', 'employee'] });
+  // }
   async getAllOrders() {
-    return this.orderRepo.find({ relations: ['task', 'employee'] });
-  }
 
+  return this.orderRepo.find({
+
+    relations: [
+
+      'employee',
+
+      'supplier'
+
+    ],
+
+  });
+
+}
+async getOrder(id: number) {
+  return this.orderRepo.findOne({
+    where: { id },
+    relations: ['task', 'employee', 'supplier'],
+  });
+}
+
+  // async updateOrder(id: number, data: any) {
+  //   await this.orderRepo.update(id, data);
+  //   return this.orderRepo.findOneBy({ id });
+  // }
   async updateOrder(id: number, data: any) {
-    await this.orderRepo.update(id, data);
-    return this.orderRepo.findOneBy({ id });
+
+  const order = await this.orderRepo.findOne({
+
+    where: { id },
+
+    relations: ['task', 'supplier', 'employee'],
+
+  });
+
+
+  if (!order) {
+
+    throw new NotFoundException('Order not found');
+
   }
 
-  async deleteOrder(id: number) {
-    return this.orderRepo.delete(id);
+
+  // update fields
+
+  order.productName = data.productName;
+
+  order.quantity = data.quantity;
+
+  order.price = data.price;
+
+  order.totalAmount = data.quantity * data.price;
+
+
+  // update task relation
+
+  if (data.taskId) {
+
+    order.task = { id: data.taskId } as any;
+
   }
 
+
+  // update supplier relation
+
+  if (data.supplierId) {
+
+    order.supplier = { id: data.supplierId } as any;
+
+  }
+
+
+  return await this.orderRepo.save(order);
+
+}
+
+  // async deleteOrder(id: number) {
+  //   return this.orderRepo.delete(id);
+  // }
+
+async deleteOrder(id: number) {
+
+  const order =
+    await this.orderRepo.findOne({
+      where: { id },
+    });
+
+  if (!order) {
+    throw new NotFoundException(
+      'Order not found',
+    );
+  }
+
+  // delete related payments first
+  await this.paymentRepo.delete({
+    order: { id },
+  });
+
+  // then delete order
+  await this.orderRepo.delete(id);
+
+  return {
+    message:
+      'Order deleted successfully',
+  };
+}
   // RELATION
+
+    async getOrdersByTask(taskId: number) {
+    return this.orderRepo.find({
+      where: { task: { id: taskId } },
+      relations: ['task'],
+    });
+  }
   async getTasksByEmployee(id: number) {
     return this.taskRepo.find({
       where: { assignedTo: { id } },
@@ -108,12 +235,7 @@ async createOrder(dto: any) {
     });
   }
 
-  async getOrdersByTask(taskId: number) {
-    return this.orderRepo.find({
-      where: { task: { id: taskId } },
-      relations: ['task'],
-    });
-  }
+
 async createPayment(dto: any) {
   const order = await this.orderRepo.findOne({
     where: { id: dto.orderId },
@@ -138,6 +260,11 @@ async createPayment(dto: any) {
       relations: ['order'],
     });
   }
+  async getAllPayments() {
+  return this.paymentRepo.find({
+    relations: ['order'],
+  });
+}
 
 
 
@@ -159,6 +286,7 @@ async createPayment(dto: any) {
       name: dto.name,
       email: dto.email,
       password: hashedPassword,
+      phone: dto.phone,
       role: dto.role,
     });
 

@@ -13,7 +13,7 @@ import {
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
-
+import { Request } from '@nestjs/common';
 //import { JwtGuard } from './jwt.guard';
 
 import { CreateEmployeeDto, CreateUserDto, UpdateProfileDto } from './employee.dto';
@@ -31,11 +31,24 @@ export class EmployeeController {
  constructor(private readonly employeeService: EmployeeService) {}
   
  // task
- @UseGuards(AuthGuard)
-  @Get('tasks')
-  getAllTasks() {
-    return this.employeeService.getAllTasks();
-  }
+//  @UseGuards(AuthGuard)
+//   @Get('tasks')
+//   getAllTasks() {
+//     return this.employeeService.getAllTasks();
+//   }
+@UseGuards(AuthGuard)
+
+@Get('tasks')
+
+getAllTasks(@Request() req) {
+
+  return this.employeeService.getAllTasks(
+
+    req.user.sub
+
+  );
+
+}
    @UseGuards(AuthGuard)
   @Get('tasks/:id')
   getTask(@Param('id', ParseIntPipe) id: number) {
@@ -63,6 +76,11 @@ export class EmployeeController {
   updateOrder(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     return this.employeeService.updateOrder(id, body);
   }
+  @UseGuards(AuthGuard)
+@Get('orders/:id')
+getOrder(@Param('id', ParseIntPipe) id: number) {
+  return this.employeeService.getOrder(id);
+}
     @UseGuards(AuthGuard)
   @Delete('orders/:id')
   deleteOrder(@Param('id', ParseIntPipe) id: number) {
@@ -91,7 +109,11 @@ createPayment(@Body() body: any) {
     return this.employeeService.getPaymentByOrder(orderId);
   }
 
-
+@UseGuards(AuthGuard)
+@Get('payment')
+getAllPayments() {
+  return this.employeeService.getAllPayments();
+}
 
 
 

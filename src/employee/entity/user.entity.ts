@@ -16,6 +16,9 @@ export class User {
     @Column()
     password!: string;
 
+    @Column()
+    phone!: string;
+
   @Column()
   role!: string; // manager | employee | supplier
     

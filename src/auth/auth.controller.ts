@@ -15,11 +15,11 @@ export class AuthController {
       const result = await this.authService.signIn(signInDto.username, signInDto.password);
       res.cookie("access_token", result.access_token, {  
         httpOnly: true, 
-        sameSite: "none", 
+        sameSite: "lax", 
         secure: false, 
         path: "/",maxAge: 300 * 60 * 1000, // 300 mins
         }); 
-        return { message: "Login successful" };
+       return result;
     
   }
 }
